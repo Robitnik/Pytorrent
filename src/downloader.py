@@ -3,6 +3,7 @@ import asyncio
 import math
 import time
 
+
 class Downloader:
     def __init__(self, session, torrent_info, save_path, libtorrent, is_magnet):
         self._session = session

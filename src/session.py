@@ -1,12 +1,20 @@
 class Session:
-    def __init__(self, libtorrent, port='6881'):
-        self._user_agent = 'python client v0.1'
-        self._listen_interfaces = '0.0.0.0'
+    def __init__(self, 
+                libtorrent, 
+                user_agent="python client v1.0.0",
+                listen_interfaces="0.0.0.0", 
+                port="6881",
+                download_rate_limit="",
+                upload_rate_limit="",
+                session=None
+                ) -> None:
+        self._user_agent = user_agent
+        self._listen_interfaces = listen_interfaces
         self._port = port
-        self._download_rate_limit = 0
-        self._upload_rate_limit = 0
+        self._download_rate_limit = download_rate_limit
+        self._upload_rate_limit = upload_rate_limit
         self._lt = libtorrent
-        self._session = None
+        self._session = session
 
     def create_session(self):
         self._session = self._lt.session({'listen_interfaces':f'{self._listen_interfaces}:{self._port}'})

@@ -4,7 +4,13 @@ import re
 
 from setuptools import setup
 
-PROJECT_NAME = 'torrentp'
+PROJECT_NAME = 'pytorrent'
+VERSION = '0.0.1-beta'
+DESCRIPTION = 'Torrent Client for Python3.12+'
+AUTHOR = 'Robitnik'
+AUTHOR_EMAIL = ''
+URL = 'https://github.com/yourusername/pytorrent'
+
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 
@@ -12,41 +18,32 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 
-def get_property(prop):
-    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop),
-                       open(os.path.join(PROJECT_NAME, '__init__.py')).read())
-    return result.group(1)
-
-
 setup(
-    name='torrentp',
-    version=get_property('__version__'),
-    description='Download from torrent with magnet link or .torrent file',
+    name=PROJECT_NAME,
+    version=VERSION,
+    description=DESCRIPTION,
     long_description=README,
     long_description_content_type="text/markdown",
-    url=get_property('__url__'),
-    author=get_property('__author__'),
-    author_email=get_property('__author_email__'),
-    license=get_property('__license__'),
-    packages=['torrentp'],
+    url=URL,
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    license='BSD License',
+    packages=[PROJECT_NAME],
     entry_points={
-        'console_scripts': ['torrentp=torrentp.cli:run_cli']
+        'console_scripts': ['pytorrent=pytorrent.cli:run_cli']
     },
-    install_requires=['libtorrent>=2.0.7', 'asyncclick>=8.1.7.2', ],
+    install_requires=[
+        'libtorrent>=2.0.11',  # Оновлена версія libtorrent
+        'asyncclick>=8.1.7.2',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: POSIX :: Linux',
-        'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
+    python_requires='>=3.11, <3.13',
 )
