@@ -1,7 +1,9 @@
 from client import Torrent
 
 
-file_path = "/home/elon/Downloads/Ameku Likarka-detektyv [RG][WEBRip Ai Rem 1080p x265 AAC 2.0].torrent"
+file_path = "/home/elon/Downloads/That Christmas (2024) NF WEB-DL 1080p [UKR_ENG] [Hurtom].mkv.torrent"
+
 
 t = Torrent(file_path=file_path)
-print(t.get_info().show_info())
+info = t.info
+info.show_info()

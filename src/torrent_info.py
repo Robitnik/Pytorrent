@@ -1,9 +1,12 @@
 from dataclasses import dataclass, asdict
 import os
 from typing import List, Optional
+from session import Session
+
 
 @dataclass
 class FileInfo:
+    # Information about a file in the torrent
     file_name: Optional[str] = None
     size: Optional[int] = None
     offset: Optional[int] = None
@@ -20,6 +23,7 @@ class FileInfo:
 
 @dataclass
 class TrackerInfo:
+    # Information about a tracker in the torrent
     complete_sent: Optional[bool] = None
     fail_limit: Optional[int] = None
     fails: Optional[int] = None
@@ -41,6 +45,7 @@ class TrackerInfo:
 
 @dataclass
 class Info:
+    # General information about the torrent
     name: Optional[str] = None
     comment: Optional[str] = None
     creation_date: Optional[int] = None
@@ -58,26 +63,37 @@ class Info:
     total_size: Optional[int] = None
     trackers: Optional[List[TrackerInfo]] = None
     web_seeds: Optional[List[str]] = None
+    num_seeds: Optional[int] = None  # Number of connected seeds
+    num_peers: Optional[int] = None  # Number of connected peers
 
     def as_dict(self) -> dict:
         return asdict(self)
 
-
 class TorrentInfo:
     def __init__(self, path: str, libtorrent):
+        # Initialize torrent information
         self._path = path
         self._lt = libtorrent
         self._info = self._lt.torrent_info(self._path)
+        self._session = Session(self._lt)
+        self._handle = self._session.add_torrent({"ti": self._info, "save_path": "./downloads"})
+        self.status = self._handle.status()
 
     def info_as_dict(self) -> dict:
+        """Return torrent information as a dictionary"""
         return self.create_torrent_info().as_dict()
 
     def show_info(self) -> None:
+        """Print torrent information"""
         for key, value in self.info_as_dict().items():
             print(f"{key}: {value}")
 
     def create_torrent_info(self) -> Info:
+        """Create an Info object from torrent metadata"""
         torrent_info = self._lt.torrent_info(self._path)
+        status = self._handle.status()
+        print(dir(status))
+        exit()
         info = Info(
             name=torrent_info.name(),
             comment=torrent_info.comment(),
@@ -95,11 +111,14 @@ class TorrentInfo:
             priv=torrent_info.priv(),
             total_size=torrent_info.total_size(),
             trackers=self.parse_tracker_info(torrent_info),
-            web_seeds=torrent_info.web_seeds()
-            )
+            web_seeds=torrent_info.web_seeds(),
+            num_seeds=status.num_seeds,
+            num_peers=status.num_peers
+        )
         return info
 
     def parse_tracker_info(self, torrent_info) -> List[TrackerInfo]:
+        """Extract tracker information from torrent metadata"""
         trackers = [
             TrackerInfo(
                 complete_sent=getattr(tracker, "complete_sent", False),
@@ -123,6 +142,7 @@ class TorrentInfo:
         return trackers
 
     def parse_file_info(self, torrent_info) -> List[FileInfo]:
+        """Extract file information from torrent metadata"""
         files_list = [
             FileInfo(
                 file_name=os.path.basename(f.path),
@@ -139,12 +159,3 @@ class TorrentInfo:
             for f in torrent_info.files()
         ]
         return files_list
-
-    def __str__(self) -> str:
-        return str(self.info_as_dict())
-
-    def __repr__(self) -> str:
-        return f"TorrentInfo(path={self._path!r})"
-
-    def __call__(self) -> Info:
-        return self.create_torrent_info()

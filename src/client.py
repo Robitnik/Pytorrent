@@ -7,7 +7,5 @@ import libtorrent as lt
 class Torrent:
     def __init__(self, file_path):
         self._path = file_path
-        info = self.get_info()
-    def get_info(self) -> TorrentInfo:
-        info = TorrentInfo(path=self._path, libtorrent=lt)
-        return info
+        self.info = TorrentInfo(path=self._path, libtorrent=lt)
+    
